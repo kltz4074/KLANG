@@ -1,0 +1,4 @@
+klang
+a = "string text 0_0"
+b = "no:("
+echo(a + " " + b)
