@@ -3,7 +3,7 @@ from core.parser import Parser
 from core.ast import print_ast
 
 if __name__ == '__main__':
-    code = open('test.kl', 'r').read()
+    code = open('test.kl', 'r').read() # if you want to run your script, change test.kl to your script path
 
     tokens = lex(code)
     parser = Parser(tokens)
