@@ -21,7 +21,6 @@ if __name__ == '__main__':
     parser = Parser(tokens)
     ast = parser.parse()
 
-
     # compliting AST
     class EvalContext:
         def __init__(self):
