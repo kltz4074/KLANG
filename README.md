@@ -1,4 +1,4 @@
-**KLANG**
+**KLANG:**
 
 eazy programming language for eazy mathematics and outputting text 
 
