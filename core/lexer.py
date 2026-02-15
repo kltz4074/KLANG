@@ -7,22 +7,26 @@ Token = namedtuple('Token', ['type', 'value'])
 
 KEYWORDS = {
     'echo',
-    'klang'
+    'klang',
+    'if',
+    'else',
+    'while'
 }
 
 TOKE_SPECIFICATION= [
     ('NUMBER', r'\d+(\.\d*)?'),  # Integer or decimal number
     ('ID', r'[a-zA-Z_][a-zA-Z0-9_]*'),  # opeations ( assigment and etc..)
+    ('STRING', r'"[^"]*"'),  # string literals
+    ('COMMENT', r'//[^\n]*'),  # single line comments
     ("OP", r'[+\-*/=<>!]+'),  # operators
     ('SKIP', r'[ \t]+'),  # skip whitespace and tabs
     ('NEWLINE', r'\n'),  # line endings
-    ('STRING', r'"[^"]*"'),  # string literals
-    ('COMMENT', r'//.*'),  # single line comments
     ('LBRACE', r'\{'),  # left brace
     ('RBRACE', r'\}'),  # right brace
     ('LPAREN', r'\('),  # left parenthesis
     ('RPAREN', r'\)'),  # right parenthesis
     ('SEMICOLON', r';'),  # semicolon
+    ('MISMATCH', r'.'),
 ]
 
 def lex(code, filename=None):
@@ -72,6 +76,8 @@ def lex(code, filename=None):
             continue
         elif kind == 'COMMENT':
             continue
+        elif kind == 'MISMATCH':
+            raise RuntimeError(f'Unexpected token: {value}')
         else:
             raise RuntimeError(f'Unexpected token: {value}')
         

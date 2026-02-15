@@ -86,6 +86,38 @@ class KlProgram(KlBase):
         )
         self.statements = statements
 
+
+class KlIf(KlBase):
+    __match_args__ = ("cond", "then_branch", "else_branch")
+
+    def __init__(self, cond, then_branch, else_branch=None):
+        def _eval(x, node):
+            if x.eval(node.cond):
+                return x.eval(node.then_branch)
+            if node.else_branch is not None:
+                return x.eval(node.else_branch)
+            return None
+
+        super().__init__(_eval)
+        self.cond = cond
+        self.then_branch = then_branch
+        self.else_branch = else_branch
+
+
+class KlWhile(KlBase):
+    __match_args__ = ("cond", "body")
+
+    def __init__(self, cond, body):
+        def _eval(x, node):
+            result = None
+            while x.eval(node.cond):
+                result = x.eval(node.body)
+            return result
+
+        super().__init__(_eval)
+        self.cond = cond
+        self.body = body
+
 class print_ast:
     def __init__(self, ast):
         self.ast = ast

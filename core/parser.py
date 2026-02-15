@@ -5,7 +5,9 @@ from core.ast import (
     KlVariable,
     KlNumber,
     KlBinOp,
-    KlEcho
+    KlEcho,
+    KlIf,
+    KlWhile
 )
 
 class Parser:
@@ -15,6 +17,57 @@ class Parser:
         expr = self.expr()
         self.expect("RPAREN")
         return KlEcho(expr)
+
+    def if_statement(self):
+        self.expect("IF")
+        self.expect("LPAREN")
+        cond = self.expr()
+        self.expect("RPAREN")
+
+        # then branch
+        if self.peek() and self.peek().type == 'LBRACE':
+            self.expect('LBRACE')
+            stmts = []
+            while self.peek() and self.peek().type != 'RBRACE':
+                stmts.append(self.statement())
+            self.expect('RBRACE')
+            then_branch = KlProgram(stmts)
+        else:
+            then_branch = KlProgram([self.statement()])
+
+        # optional else
+        else_branch = None
+        if self.peek() and self.peek().type == 'ELSE':
+            self.expect('ELSE')
+            if self.peek() and self.peek().type == 'LBRACE':
+                self.expect('LBRACE')
+                stmts = []
+                while self.peek() and self.peek().type != 'RBRACE':
+                    stmts.append(self.statement())
+                self.expect('RBRACE')
+                else_branch = KlProgram(stmts)
+            else:
+                else_branch = KlProgram([self.statement()])
+
+        return KlIf(cond, then_branch, else_branch)
+
+    def while_statement(self):
+        self.expect('WHILE')
+        self.expect('LPAREN')
+        cond = self.expr()
+        self.expect('RPAREN')
+
+        if self.peek() and self.peek().type == 'LBRACE':
+            self.expect('LBRACE')
+            stmts = []
+            while self.peek() and self.peek().type != 'RBRACE':
+                stmts.append(self.statement())
+            self.expect('RBRACE')
+            body = KlProgram(stmts)
+        else:
+            body = KlProgram([self.statement()])
+
+        return KlWhile(cond, body)
 
     def __init__(self, tokens):
         self.tokens = list(tokens)
@@ -51,6 +104,10 @@ class Parser:
             return self.assigment()
         elif tok.type == "ECHO":
             return self.echo_statement()
+        elif tok.type == "IF":
+            return self.if_statement()
+        elif tok.type == "WHILE":
+            return self.while_statement()
         else:
             raise SyntaxError(f"Unexpected token: {tok}")
         
